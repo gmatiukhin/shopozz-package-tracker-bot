@@ -4,7 +4,7 @@ from datetime import timedelta
 from telegram import Update
 from telegram.ext import filters, ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler
 
-from tracking import Tracklist
+from tracklist import Tracklist
 tracklist = Tracklist()
 
 import scraper
@@ -24,7 +24,7 @@ async def new_tracking_number(update: Update, context: ContextTypes.DEFAULT_TYPE
         tracking_number = context.args[0]
         tracklist.add(chat_id, tracking_number)
 
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Done, I am traking your package.")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="Done, I am tracking your package.")
 
 async def invalid_tracking_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
     assert update.effective_chat is not None
@@ -47,13 +47,13 @@ async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, I do not know how to respond.")
 
 async def tracking_status_check(context: ContextTypes.DEFAULT_TYPE):
-    tracking_data = tracklist.data()
+    tracking_data = tracklist.user_data
     for chat_id, tracking_numbers in tracking_data.items():
         for number in tracking_numbers:
             message = scraper.get_status(number)
-            if message:
+            if message and message != tracklist.status(number):
                 await context.bot.send_message(chat_id=chat_id, text=message)
-
+                tracklist.update_status(number, message)
 
 if __name__ == '__main__':
     tracklist.deserialize()
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     job_queue = application.job_queue
     assert job_queue is not None
-    job_minute = job_queue.run_repeating(tracking_status_check, interval=timedelta(minutes=1))
+    job_minute = job_queue.run_repeating(tracking_status_check, interval=timedelta(minutes=15))
     
     start_handler = CommandHandler('start', start)
     application.add_handler(start_handler)
