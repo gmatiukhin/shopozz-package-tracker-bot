@@ -5,7 +5,7 @@ from os import makedirs
 class Tracklist:
     user_data = dict()
     statuses = dict()
-    _file_name = expanduser('~') + "/shopozz-tracker-bot/tracking.json"
+    _file_name = "tracking.json"
 
     def add(self, chat_id, tracking_number):
         data = self.user_data

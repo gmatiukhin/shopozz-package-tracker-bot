@@ -1,3 +1,4 @@
+import os
 import logging
 from datetime import timedelta
 
@@ -58,10 +59,9 @@ async def tracking_status_check(context: ContextTypes.DEFAULT_TYPE):
 if __name__ == '__main__':
     tracklist.deserialize()
 
-    with open("bot-token", "r") as token_file:
-        token = token_file.read().strip()
+    TOKEN = os.getenv("BOT_TOKEN")
 
-    application = ApplicationBuilder().token(f"{token}").build()
+    application = ApplicationBuilder().token(f"{TOKEN}").build()
 
     job_queue = application.job_queue
     assert job_queue is not None
