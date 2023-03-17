@@ -18,9 +18,10 @@ class Tracklist:
         elif tracking_number not in data[chat_id]:
             data[chat_id].append(tracking_number)
         else:
-            return
+            return "I am already tracking your package."
         self.statuses[tracking_number] = ""
         self.serialize()
+        return "Done, I am tracking your package."
 
     def remove(self, chat_id, tracking_number):
         data = self.user_data
@@ -31,6 +32,8 @@ class Tracklist:
                 if tracking_number in self.statuses:
                     self.statuses.pop(tracking_number)
                 self.serialize()
+                return "Done, I am no longer tracking your package."
+        return "Sorry, I am not tracking your package."
 
     def update_status(self, tracking_number, status_message):
         if tracking_number in self.statuses:
