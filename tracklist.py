@@ -2,10 +2,11 @@ import json
 from os.path import exists, expanduser, dirname
 from os import makedirs
 
+
 class Tracklist:
     user_data = dict()
     statuses = dict()
-    _file_name = "tracking.json"
+    _file_name = "./tracking.json"
 
     def add(self, chat_id, tracking_number):
         data = self.user_data
@@ -20,6 +21,7 @@ class Tracklist:
 
     def remove(self, chat_id, tracking_number):
         data = self.user_data
+        chat_id = str(chat_id)
         if data and data[chat_id]:
             if tracking_number in data[chat_id]:
                 data[chat_id].remove(tracking_number)
@@ -31,8 +33,11 @@ class Tracklist:
         if tracking_number in self.statuses:
             self.statuses[tracking_number] = status_message
             self.serialize()
+
     def status(self, tracking_number):
-        return self.statuses[tracking_number] if tracking_number in self.statuses else None
+        return (
+            self.statuses[tracking_number] if tracking_number in self.statuses else None
+        )
 
     def serialize(self):
         makedirs(dirname(self._file_name), exist_ok=True)
