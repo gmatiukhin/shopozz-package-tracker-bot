@@ -15,8 +15,10 @@ class Tracklist:
             data[chat_id] = [tracking_number]
         elif chat_id not in list(data.keys()):
             data[chat_id] = [tracking_number]
-        else:
+        elif tracking_number not in data[chat_id]:
             data[chat_id].append(tracking_number)
+        else:
+            return
         self.statuses[tracking_number] = ""
         self.serialize()
 
