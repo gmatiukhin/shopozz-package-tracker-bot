@@ -10,6 +10,7 @@ class Tracklist:
 
     def add(self, chat_id, tracking_number):
         data = self.user_data
+        chat_id = str(chat_id)
         if not data:
             data[chat_id] = [tracking_number]
         elif chat_id not in list(data.keys()):
