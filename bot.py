@@ -77,10 +77,11 @@ async def tracking_status_check(context: ContextTypes.DEFAULT_TYPE):
     tracking_data = tracklist.user_data
     for chat_id, tracking_numbers in tracking_data.items():
         for number in tracking_numbers:
-            message = scraper.get_status(number)
-            if message and message != tracklist.status(number):
+            status = scraper.get_status(number)
+            if status and status != tracklist.status(number):
+                message = f"Package {number}\n\n{status}"
                 await context.bot.send_message(chat_id=chat_id, text=message)
-                tracklist.update_status(number, message)
+                tracklist.update_status(number, status)
 
 
 if __name__ == "__main__":
