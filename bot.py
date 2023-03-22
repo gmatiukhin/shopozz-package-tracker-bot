@@ -34,6 +34,7 @@ async def new_tracking_number(update: Update, context: ContextTypes.DEFAULT_TYPE
     if context.args and update.effective_chat is not None:
         chat_id = update.effective_chat.id
         tracking_number = context.args[0]
+        logging.info(f"New tracking number {tracking_number}; chat {chat_id}")
         resp = tracklist.add(chat_id, tracking_number)
 
         await context.bot.send_message(chat_id=update.effective_chat.id, text=resp)
@@ -41,8 +42,10 @@ async def new_tracking_number(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 async def invalid_tracking_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
     assert update.effective_chat is not None
+    chat_id = update.effective_chat.id
+    logging.info(f"Invalid tracking number; user {chat_id}")
     await context.bot.send_message(
-        chat_id=update.effective_chat.id, text="Sorry, your track number is invalid."
+        chat_id=chat_id, text="Sorry, your track number is invalid."
     )
 
 
@@ -50,6 +53,7 @@ async def remove_tracking_number(update: Update, context: ContextTypes.DEFAULT_T
     if context.args and update.effective_chat is not None:
         chat_id = update.effective_chat.id
         tracking_number = context.args[0]
+        logging.info(f"Remove tracking number {tracking_number}; chat {chat_id}")
         resp = tracklist.remove(chat_id, tracking_number)
 
         await context.bot.send_message(
@@ -60,16 +64,20 @@ async def remove_tracking_number(update: Update, context: ContextTypes.DEFAULT_T
 
 async def unknown_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     assert update.effective_chat is not None
+    chat_id = update.effective_chat.id
+    logging.info(f"Unknown command; chat {chat_id}")
     await context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text="Sorry, I did not understand that command.",
     )
 
 
 async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     assert update.effective_chat is not None
+    chat_id = update.effective_chat.id
+    logging.info(f"Unknown message; chat {chat_id}")
     await context.bot.send_message(
-        chat_id=update.effective_chat.id, text="Sorry, I do not know how to respond."
+        chat_id=chat_id, text="Sorry, I do not know how to respond."
     )
 
 

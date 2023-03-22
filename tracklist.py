@@ -1,5 +1,5 @@
 import json
-from os.path import exists, expanduser, dirname
+from os.path import exists, dirname
 from os import makedirs
 
 
@@ -9,36 +9,42 @@ class Tracklist:
     _file_name = "./tracking.json"
 
     def add(self, chat_id, tracking_number):
-        data = self.user_data
+        user_data = self.user_data
         chat_id = str(chat_id)
-        if not data:
-            data[chat_id] = [tracking_number]
-        elif chat_id not in list(data.keys()):
-            data[chat_id] = [tracking_number]
-        elif tracking_number not in data[chat_id]:
-            data[chat_id].append(tracking_number)
+        if not user_data:
+            user_data[chat_id] = [tracking_number]
+        elif chat_id not in list(user_data.keys()):
+            user_data[chat_id] = [tracking_number]
+        elif tracking_number not in user_data[chat_id]:
+            user_data[chat_id].append(tracking_number)
         else:
             return "I am already tracking your package."
 
         if tracking_number not in self.statuses:
             self.statuses[tracking_number] = ""
-            self.serialize()
-        elif self.statuses[tracking_number]:
+
+        self.serialize()
+
+        if self.statuses[tracking_number]:
             status = self.statuses[tracking_number]
             return f"""This package is already in my system.\n\n{status}"""
 
         return "Done, I am tracking your package."
 
     def remove(self, chat_id, tracking_number):
-        data = self.user_data
+        user_data = self.user_data
         chat_id = str(chat_id)
-        if data and data[chat_id]:
-            if tracking_number in data[chat_id]:
-                data[chat_id].remove(tracking_number)
-                if tracking_number in self.statuses and tracking_number not in list(
-                    data.values()
+        if user_data and user_data[chat_id]:
+            if tracking_number in user_data[chat_id]:
+                user_data[chat_id].remove(tracking_number)
+                if (
+                    tracking_number in self.statuses
+                    and tracking_number not in user_data.values()
                 ):
                     self.statuses.pop(tracking_number)
+
+                if not user_data[chat_id]:
+                    user_data.pop(chat_id)
                 self.serialize()
                 return "Done, I am no longer tracking your package."
         return "Sorry, I am not tracking your package."
