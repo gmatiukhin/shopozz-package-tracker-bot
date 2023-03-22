@@ -23,10 +23,11 @@ class Tracklist:
         if tracking_number not in self.statuses:
             self.statuses[tracking_number] = ""
             self.serialize()
-            return "Done, I am tracking your package."
-        else:
+        elif self.statuses[tracking_number]:
             status = self.statuses[tracking_number]
             return f"""This package is already in my system.\n\n{status}"""
+
+        return "Done, I am tracking your package."
 
     def remove(self, chat_id, tracking_number):
         data = self.user_data
