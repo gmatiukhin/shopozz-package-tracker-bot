@@ -19,9 +19,14 @@ class Tracklist:
             data[chat_id].append(tracking_number)
         else:
             return "I am already tracking your package."
-        self.statuses[tracking_number] = ""
-        self.serialize()
-        return "Done, I am tracking your package."
+
+        if tracking_number not in self.statuses:
+            self.statuses[tracking_number] = ""
+            self.serialize()
+            return "Done, I am tracking your package."
+        else:
+            status = self.statuses[tracking_number]
+            return f"""This package is already in my system.\n\n{status}"""
 
     def remove(self, chat_id, tracking_number):
         data = self.user_data
