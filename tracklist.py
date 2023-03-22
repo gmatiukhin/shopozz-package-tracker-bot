@@ -35,7 +35,9 @@ class Tracklist:
         if data and data[chat_id]:
             if tracking_number in data[chat_id]:
                 data[chat_id].remove(tracking_number)
-                if tracking_number in self.statuses:
+                if tracking_number in self.statuses and tracking_number not in list(
+                    data.values()
+                ):
                     self.statuses.pop(tracking_number)
                 self.serialize()
                 return "Done, I am no longer tracking your package."
