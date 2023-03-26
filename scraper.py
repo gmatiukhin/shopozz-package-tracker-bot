@@ -2,6 +2,8 @@ import requests
 import json
 from datetime import datetime
 
+import logging
+
 
 def get_status(tracking_number):
     data = get_russian_post_data(tracking_number)
@@ -45,13 +47,16 @@ def get_shopozz_data(tracking_number):
     headers = {
         "User-Agent": "Shopozz-package-tracker-bot/1.0",
     }
-    response = requests.get(url, headers=headers)
 
-    data = json.loads(response.text)
     try:
+        response = requests.get(url, headers=headers)
+        data = json.loads(response.text)
         return data["events"]
-    except KeyError:
-        return []
+    except requests.exceptions.ConnectionError:
+        logging.error("Connection refused: shopozz.ru")
+    except KeyError as ke:
+        logging.error(f"Key not found in 'shopozz.ru' response: {ke}")
+    return []
 
 
 def get_russian_post_data(tracking_number):
@@ -63,8 +68,18 @@ def get_russian_post_data(tracking_number):
         "Accept": "application/json",
     }
 
-    response = requests.post(url, json=payload, headers=headers, allow_redirects=True)
-    if response.status_code == 200:
-        data = json.loads(response.text)
-        return data["detailedTrackings"][0]["trackingItem"]["trackingHistoryItemList"]
+    try:
+        response = requests.post(
+            url, json=payload, headers=headers, allow_redirects=True
+        )
+        if response.status_code == 200:
+            data = json.loads(response.text)
+            return data["detailedTrackings"][0]["trackingItem"][
+                "trackingHistoryItemList"
+            ]
+    except requests.exceptions.ConnectionError:
+        logging.error("Connection refused: pochta.ru")
+    except KeyError as ke:
+        logging.error(f"Key not found in 'pochta.ru' response: {ke}")
+
     return None

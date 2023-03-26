@@ -1,5 +1,4 @@
 import os
-import logging
 from datetime import timedelta
 
 from telegram import Update
@@ -17,8 +16,15 @@ tracklist = Tracklist()
 
 import scraper
 
+import logging
+
 logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+    handlers=[
+        logging.FileHandler(filename="./bot.log", mode="w"),
+        logging.StreamHandler(),
+    ],
 )
 
 

@@ -2,6 +2,8 @@ import json
 from os.path import exists, dirname
 from os import makedirs
 
+import logging
+
 
 class Tracklist:
     tracking_data = dict()
@@ -58,12 +60,14 @@ class Tracklist:
         )
 
     def serialize(self):
+        logging.info("Serializing tracking data")
         makedirs(dirname(self._file_name), exist_ok=True)
         with open(self._file_name, "w") as tracking_file:
             ser = {"trackingData": self.tracking_data, "statuses": self.statuses}
             tracking_file.write(json.dumps(ser))
 
     def deserialize(self):
+        logging.info("Deserializing tracking data")
         if exists(self._file_name):
             with open(self._file_name, "r") as tracking_file:
                 de = json.loads(tracking_file.read())

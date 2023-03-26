@@ -4,6 +4,7 @@ services:
     build: .
     restart: unless-stopped
     env_file:
-     - CONFIG.env
+      - CONFIG.env
     volumes:
-     - ./tracking.json:/app/tracking.json
+      - ./tracking.json:/app/tracking.json
+      - ./bot.log:/app/bot.log
