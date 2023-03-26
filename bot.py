@@ -26,7 +26,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     assert update.effective_chat is not None
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="Please provide a tracking number using /track command",
+        text="Please provide a tracking number using /track command.\nYou can use /untrack to stop receiving status updates.",
     )
 
 
@@ -82,14 +82,18 @@ async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def tracking_status_check(context: ContextTypes.DEFAULT_TYPE):
-    tracking_data = tracklist.user_data
-    for chat_id, tracking_numbers in tracking_data.items():
-        for number in tracking_numbers:
-            status = scraper.get_status(number)
-            if status and status != tracklist.status(number):
-                message = f"Package {number}\n\n{status}"
+    tracking_data = tracklist.tracking_data
+    for tracking_number, chats in tracking_data.items():
+        status = scraper.get_status(tracking_number)
+        if status and status != tracklist.status(tracking_number):
+            logging.info(f"New status for package {tracking_number}")
+            message = f"Package {tracking_number}\n\n{status}"
+            for chat_id in chats:
                 await context.bot.send_message(chat_id=chat_id, text=message)
-                tracklist.update_status(number, status)
+                logging.info(
+                    f"Sent unpdate about package {tracking_number} to chat {chat_id}"
+                )
+            tracklist.update_status(tracking_number, status)
 
 
 if __name__ == "__main__":
@@ -102,7 +106,7 @@ if __name__ == "__main__":
     job_queue = application.job_queue
     assert job_queue is not None
     job_minute = job_queue.run_repeating(
-        tracking_status_check, interval=timedelta(minutes=15)
+        tracking_status_check, interval=timedelta(minutes=5)
     )
 
     start_handler = CommandHandler("start", start)
@@ -113,13 +117,19 @@ if __name__ == "__main__":
     )
     application.add_handler(new_tracking_number_handler)
 
-    invalid_tracking_number_handler = CommandHandler("track", invalid_tracking_number)
-    application.add_handler(invalid_tracking_number_handler)
+    invalid_new_tracking_number_handler = CommandHandler(
+        "track", invalid_tracking_number
+    )
+    application.add_handler(invalid_new_tracking_number_handler)
 
     remove_tracking_number_handler = CommandHandler(
         "untrack", remove_tracking_number, filters.Regex(r"[A-Z]{2}\d{9}RU")
     )
     application.add_handler(remove_tracking_number_handler)
+    invalid_remove_tracking_number_handler = CommandHandler(
+        "untrack", invalid_tracking_number
+    )
+    application.add_handler(invalid_remove_tracking_number_handler)
 
     # Unknown handlers
     unknown_command_handler = MessageHandler(filters.COMMAND, unknown_command)
