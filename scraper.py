@@ -39,7 +39,7 @@ def format_shopozz_event(json_data):
     date = datetime.fromisoformat(json_data["datetime"])
     event = json_data["event"]
     location = json_data["location"]
-    return format_event(date, event, location, "Shopozz.ru")
+    return format_event(date, event, location, "shopozz.ru")
 
 
 def get_shopozz_data(tracking_number):
