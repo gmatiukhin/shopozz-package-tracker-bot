@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import requests
 import json
 from datetime import datetime
@@ -5,16 +7,18 @@ from datetime import datetime
 import logging
 
 
-def get_status(tracking_number):
+def get_status(tracking_number) -> Tuple[str, float]:
     data = get_russian_post_data(tracking_number)
 
     if data:
-        return format_russian_post_event(data[0])
+        logging.info("Got data from russian post")
+        return parse_russian_post_event(data[0])
     else:
         data = get_shopozz_data(tracking_number)
         if data:
-            return format_shopozz_event(data[0])
-    return ""
+            logging.info("Got data from shopozz")
+            return parse_shopozz_event(data[0])
+    return ("", 0)  # Ok, python
 
 
 def format_event(date, event, location, source):
@@ -23,7 +27,7 @@ def format_event(date, event, location, source):
     return message
 
 
-def format_russian_post_event(json_data):
+def parse_russian_post_event(json_data) -> Tuple[str, float]:
     date = datetime.fromisoformat(json_data["date"])
     event = json_data["humanStatus"]
     city = json_data["cityName"]
@@ -32,14 +36,14 @@ def format_russian_post_event(json_data):
     if city:
         location += city + ", "
     location += country
-    return format_event(date, event, location, "pochta.ru")
+    return (format_event(date, event, location, "pochta.ru"), date.timestamp())
 
 
-def format_shopozz_event(json_data):
+def parse_shopozz_event(json_data) -> Tuple[str, float]:
     date = datetime.fromisoformat(json_data["datetime"])
     event = json_data["event"]
     location = json_data["location"]
-    return format_event(date, event, location, "shopozz.ru")
+    return (format_event(date, event, location, "shopozz.ru"), date.timestamp())
 
 
 def get_shopozz_data(tracking_number):

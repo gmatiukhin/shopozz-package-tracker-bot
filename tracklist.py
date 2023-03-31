@@ -49,14 +49,23 @@ class Tracklist:
                 return "Done, I am no longer tracking your package."
         return "Sorry, I am not tracking your package."
 
-    def update_status(self, tracking_number, status_message):
+    def update_status(self, tracking_number, status_message, timestamp):
         if tracking_number in self.statuses:
-            self.statuses[tracking_number] = status_message
+            self.statuses[tracking_number] = (status_message, timestamp)
             self.serialize()
 
     def status(self, tracking_number):
         return (
-            self.statuses[tracking_number] if tracking_number in self.statuses else None
+            self.statuses[tracking_number][0]
+            if tracking_number in self.statuses
+            else None
+        )
+
+    def timestamp(self, tracking_number):
+        return (
+            self.statuses[tracking_number][1]
+            if tracking_number in self.statuses
+            else None
         )
 
     def serialize(self):
