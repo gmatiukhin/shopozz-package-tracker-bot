@@ -8,7 +8,7 @@ import logging
 class Tracklist:
     tracking_data = dict()
     statuses = dict()
-    _file_name = "./tracking.json"
+    _file_name = "./data.json"
 
     def add(self, chat_id, tracking_number):
         tracking_number = str(tracking_number)

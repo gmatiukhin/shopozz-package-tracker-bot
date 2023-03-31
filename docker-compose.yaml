@@ -6,5 +6,5 @@ services:
     env_file:
       - CONFIG.env
     volumes:
-      - ./tracking.json:/app/tracking.json
+      - ./data.json:/app/data.json
       - ./bot.log:/app/bot.log
