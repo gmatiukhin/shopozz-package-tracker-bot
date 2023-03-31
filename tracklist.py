@@ -73,7 +73,7 @@ class Tracklist:
         makedirs(dirname(self._file_name), exist_ok=True)
         with open(self._file_name, "w") as tracking_file:
             ser = {"trackingData": self.tracking_data, "statuses": self.statuses}
-            tracking_file.write(json.dumps(ser))
+            tracking_file.write(json.dumps(ser, indent=2))
 
     def deserialize(self):
         logging.info("Deserializing tracking data")
