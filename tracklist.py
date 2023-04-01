@@ -22,7 +22,7 @@ class Tracklist:
             return "I am already tracking your package."
 
         if tracking_number not in self.statuses:
-            self.statuses[tracking_number] = ""
+            self.statuses[tracking_number] = ("", 0.0)
 
         self.serialize()
 
@@ -54,18 +54,18 @@ class Tracklist:
             self.statuses[tracking_number] = (status_message, timestamp)
             self.serialize()
 
-    def status(self, tracking_number):
+    def status(self, tracking_number) -> str:
         return (
             self.statuses[tracking_number][0]
             if tracking_number in self.statuses
-            else None
+            else ""
         )
 
-    def timestamp(self, tracking_number):
+    def timestamp(self, tracking_number) -> float:
         return (
             self.statuses[tracking_number][1]
             if tracking_number in self.statuses
-            else None
+            else 0.0
         )
 
     def serialize(self):

@@ -99,7 +99,7 @@ async def tracking_status_check(context: ContextTypes.DEFAULT_TYPE):
         status, timestamp = scraper.get_status(tracking_number)
         curr_status = tracklist.status(tracking_number)
         curr_timestamp = tracklist.timestamp(tracking_number)
-        if status and status != curr_status and timestamp != curr_timestamp:
+        if status and status != curr_status and timestamp > curr_timestamp:
             logging.info(f"New status for package {tracking_number}")
             message = f"Package {tracking_number}\n\n{status}"
             for chat_id in chats:
@@ -151,7 +151,8 @@ if __name__ == "__main__":
     job_queue = application.job_queue
     assert job_queue is not None
     job_minute = job_queue.run_repeating(
-        tracking_status_check, interval=timedelta(minutes=5)
+        tracking_status_check,
+        interval=timedelta(minutes=10),
     )
 
     start_handler = CommandHandler("start", start)
