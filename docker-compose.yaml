@@ -8,3 +8,5 @@ services:
     volumes:
       - ./data.json:/app/data.json
       - ./bot.log:/app/bot.log
+    environment:
+      - TZ=Europe/Moscow
