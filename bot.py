@@ -38,7 +38,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat is not None:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="Please provide a tracking number using /track command.\nYou can use /untrack to stop receiving status updates.",
+            text="Please provide a tracking number using `/track` command.\nUse `/list` to see all currently tracked packages.\nYou can use `/untrack` to stop receiving status updates.",
         )
 
 
