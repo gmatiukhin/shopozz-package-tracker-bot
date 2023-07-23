@@ -18,17 +18,16 @@ class Tracklist:
             self.tracking_data[tracking_number] = [chat_id]
         elif chat_id not in self.tracking_data[tracking_number]:
             self.tracking_data[tracking_number].append(chat_id)
-        else:
-            return "I am already tracking your package."
 
         if tracking_number not in self.statuses:
             self.statuses[tracking_number] = ("", 0.0)
+        else:
+            status = self.statuses[tracking_number][0]
+            return (
+                f"I am already tracking your package.\nHere is its status:\n\n{status}"
+            )
 
         self.serialize()
-
-        if self.statuses[tracking_number]:
-            status = self.statuses[tracking_number]
-            return f"""This package is already in my system.\n\n{status}"""
 
         return "Done, I am tracking your package."
 
