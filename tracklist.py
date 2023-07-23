@@ -49,6 +49,16 @@ class Tracklist:
                 return "Done, I am no longer tracking your package."
         return "Sorry, I am not tracking your package."
 
+    def list_packages_for_chat(self, chat_id):
+        if self.tracking_data:
+            packages = []
+            for k, v in self.tracking_data.items():
+                if chat_id in v:
+                    packages.append(k)
+            if packages:
+                return "Here are your packages:\n" + "\n".join(packages)
+        return "Sorry, it looks like you are not tracking any packages."
+
     def update_status(self, tracking_number, status_message, timestamp):
         if tracking_number in self.statuses:
             self.statuses[tracking_number] = (status_message, timestamp)

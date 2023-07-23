@@ -35,11 +35,11 @@ DEVELOPER_CHAT_ID = 563638147
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    assert update.effective_chat is not None
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Please provide a tracking number using /track command.\nYou can use /untrack to stop receiving status updates.",
-    )
+    if update.effective_chat is not None:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Please provide a tracking number using /track command.\nYou can use /untrack to stop receiving status updates.",
+        )
 
 
 async def new_tracking_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -53,12 +53,20 @@ async def new_tracking_number(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 
 async def invalid_tracking_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    assert update.effective_chat is not None
-    chat_id = update.effective_chat.id
-    logging.info(f"Invalid tracking number; user {chat_id}")
-    await context.bot.send_message(
-        chat_id=chat_id, text="Sorry, your track number is invalid."
-    )
+    if update.effective_chat is not None:
+        chat_id = update.effective_chat.id
+        logging.info(f"Invalid tracking number; user {chat_id}")
+        await context.bot.send_message(
+            chat_id=chat_id, text="Sorry, your track number is invalid."
+        )
+
+
+async def list_tracked_packages(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat is not None:
+        chat_id = update.effective_chat.id
+        resp = tracklist.list_packages_for_chat(chat_id)
+
+        await context.bot.send_message(chat_id=chat_id, text=resp)
 
 
 async def remove_tracking_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -69,28 +77,28 @@ async def remove_tracking_number(update: Update, context: ContextTypes.DEFAULT_T
         resp = tracklist.remove(chat_id, tracking_number)
 
         await context.bot.send_message(
-            chat_id=update.effective_chat.id,
+            chat_id=chat_id,
             text=resp,
         )
 
 
 async def unknown_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    assert update.effective_chat is not None
-    chat_id = update.effective_chat.id
-    logging.info(f"Unknown command; chat {chat_id}")
-    await context.bot.send_message(
-        chat_id=chat_id,
-        text="Sorry, I did not understand that command.",
-    )
+    if update.effective_chat is not None:
+        chat_id = update.effective_chat.id
+        logging.info(f"Unknown command; chat {chat_id}")
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text="Sorry, I did not understand that command.",
+        )
 
 
 async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    assert update.effective_chat is not None
-    chat_id = update.effective_chat.id
-    logging.info(f"Unknown message; chat {chat_id}")
-    await context.bot.send_message(
-        chat_id=chat_id, text="Sorry, I do not know how to respond."
-    )
+    if update.effective_chat is not None:
+        chat_id = update.effective_chat.id
+        logging.info(f"Unknown message; chat {chat_id}")
+        await context.bot.send_message(
+            chat_id=chat_id, text="Sorry, I do not know how to respond."
+        )
 
 
 async def tracking_status_check(context: ContextTypes.DEFAULT_TYPE):
@@ -172,10 +180,14 @@ if __name__ == "__main__":
         "untrack", remove_tracking_number, filters.Regex(r"[A-Z]{2}\d{9}RU")
     )
     application.add_handler(remove_tracking_number_handler)
+
     invalid_remove_tracking_number_handler = CommandHandler(
         "untrack", invalid_tracking_number
     )
     application.add_handler(invalid_remove_tracking_number_handler)
+
+    list_tracked_packages_handler = CommandHandler("list", list_tracked_packages)
+    application.add_handler(list_tracked_packages_handler)
 
     # Unknown handlers
     unknown_command_handler = MessageHandler(filters.COMMAND, unknown_command)
